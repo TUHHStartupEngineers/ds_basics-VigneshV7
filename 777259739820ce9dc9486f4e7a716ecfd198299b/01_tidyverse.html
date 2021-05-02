@@ -385,26 +385,27 @@ div.tocify {
 <div id="introduction-to-tidyverse" class="section level1" number="1">
 <h1 number="1"><span class="header-section-number">1</span> Introduction to Tidyverse</h1>
 <p>Last compiled: 2021-05-02</p>
-<div id="load-libraries" class="section level2" number="1.1">
-<h2 number="1.1"><span class="header-section-number">1.1</span> Load libraries</h2>
+</div>
+<div id="load-libraries" class="section level1" number="2">
+<h1 number="2"><span class="header-section-number">2</span> Load libraries</h1>
 <p>Load the necessary libraries at the beginning.</p>
 <pre class="r"><code>library(tidyverse)
 
 # Excel Files
 library(readxl)</code></pre>
 </div>
-<div id="load-the-data" class="section level2" number="1.2">
-<h2 number="1.2"><span class="header-section-number">1.2</span> Load the data</h2>
+<div id="load-the-data" class="section level1" number="3">
+<h1 number="3"><span class="header-section-number">3</span> Load the data</h1>
 <p>Load the bike sales data and store into objects.</p>
 </div>
-<div id="joining-the-data" class="section level2" number="1.3">
-<h2 number="1.3"><span class="header-section-number">1.3</span> Joining the data</h2>
+<div id="joining-the-data" class="section level1" number="4">
+<h1 number="4"><span class="header-section-number">4</span> Joining the data</h1>
 <pre class="r"><code>bike_orderlines_joined_tbl &lt;- orderlines_tbl %&gt;% 
   left_join(bikes_tbl, by = c(&quot;product.id&quot; = &quot;bike.id&quot;)) %&gt;%
   left_join(bikeshops_tbl, by = c(&quot;customer.id&quot; = &quot;bikeshop.id&quot;))</code></pre>
 </div>
-<div id="wrangling-data" class="section level2" number="1.4">
-<h2 number="1.4"><span class="header-section-number">1.4</span> Wrangling Data</h2>
+<div id="wrangling-data" class="section level1" number="5">
+<h1 number="5"><span class="header-section-number">5</span> Wrangling Data</h1>
 <pre class="r"><code>bike_orderlines_wrangled_tbl &lt;- bike_orderlines_joined_tbl %&gt;% 
   
   # 5.1 Separate category name
@@ -436,10 +437,10 @@ library(readxl)</code></pre>
   rename(bikeshop = name) %&gt;% 
   set_names(names(.) %&gt;% str_replace_all(&quot;\\.&quot;, &quot;_&quot;))</code></pre>
 </div>
-<div id="business-insights" class="section level2" number="1.5">
-<h2 number="1.5"><span class="header-section-number">1.5</span> Business Insights</h2>
-<div id="sales-by-year" class="section level3" number="1.5.1">
-<h3 number="1.5.1"><span class="header-section-number">1.5.1</span> Sales by Year</h3>
+<div id="business-insights" class="section level1" number="6">
+<h1 number="6"><span class="header-section-number">6</span> Business Insights</h1>
+<div id="sales-by-year" class="section level2" number="6.1">
+<h2 number="6.1"><span class="header-section-number">6.1</span> Sales by Year</h2>
 <pre class="r"><code># 6.0 Business Insights ----
 # 6.1 Sales by Year ----
 
@@ -465,13 +466,9 @@ sales_by_year_tbl &lt;- bike_orderlines_wrangled_tbl %&gt;%
                                      prefix = &quot;&quot;,
                                      suffix = &quot; €&quot;))
 
-sales_by_year_tbl</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["year"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["sales"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["sales_text"],"name":[3],"type":["chr"],"align":["left"]}],"data":[{"1":"2015","2":"9930282","3":"9.930.282 \\200"},{"1":"2016","2":"10730507","3":"10.730.507 \\200"},{"1":"2017","2":"14510291","3":"14.510.291 \\200"},{"1":"2018","2":"12241853","3":"12.241.853 \\200"},{"1":"2019","2":"15017875","3":"15.017.875 \\200"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-<pre class="r"><code># Step 2 - Visualize
+# sales_by_year_tbl
+
+# Step 2 - Visualize
 sales_by_year_tbl %&gt;% 
   
   # Setup canvas with the columns year (x-axis) and sales (y-axis)
@@ -496,10 +493,10 @@ sales_by_year_tbl %&gt;%
     x = &quot;&quot;, # Override defaults for x and y
     y = &quot;Revenue&quot;
   )</code></pre>
-<p><img src="01_tidyverse_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="01_tidyverse_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="sales-by-year-and-category-1" class="section level3" number="1.5.2">
-<h3 number="1.5.2"><span class="header-section-number">1.5.2</span> Sales by Year and Category 1</h3>
+<div id="sales-by-year-and-category-1" class="section level2" number="6.2">
+<h2 number="6.2"><span class="header-section-number">6.2</span> Sales by Year and Category 1</h2>
 <pre class="r"><code># 6.2 Sales by Year and Category 1 ----
 
 # Step 1 - Manipulate
@@ -520,13 +517,9 @@ sales_by_year_cat_1_tbl &lt;- bike_orderlines_wrangled_tbl %&gt;%
                                      prefix = &quot;&quot;,
                                      suffix = &quot; €&quot;))
 
-sales_by_year_cat_1_tbl</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["year"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["category_1"],"name":[2],"type":["chr"],"align":["left"]},{"label":["sales"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["sales_text"],"name":[4],"type":["chr"],"align":["left"]}],"data":[{"1":"2015","2":"E","3":"1599048","4":"1.599.048 \\200"},{"1":"2015","2":"Gravel","3":"663025","4":"663.025 \\200"},{"1":"2015","2":"Hybrid / City","3":"502512","4":"502.512 \\200"},{"1":"2015","2":"Mountain","3":"3254289","4":"3.254.289 \\200"},{"1":"2015","2":"Road","3":"3911408","4":"3.911.408 \\200"},{"1":"2016","2":"E","3":"1916469","4":"1.916.469 \\200"},{"1":"2016","2":"Gravel","3":"768794","4":"768.794 \\200"},{"1":"2016","2":"Hybrid / City","3":"512346","4":"512.346 \\200"},{"1":"2016","2":"Mountain","3":"3288733","4":"3.288.733 \\200"},{"1":"2016","2":"Road","3":"4244165","4":"4.244.165 \\200"},{"1":"2017","2":"E","3":"2617352","4":"2.617.352 \\200"},{"1":"2017","2":"Gravel","3":"1006839","4":"1.006.839 \\200"},{"1":"2017","2":"Hybrid / City","3":"784491","4":"784.491 \\200"},{"1":"2017","2":"Mountain","3":"4482867","4":"4.482.867 \\200"},{"1":"2017","2":"Road","3":"5618742","4":"5.618.742 \\200"},{"1":"2018","2":"E","3":"2151550","4":"2.151.550 \\200"},{"1":"2018","2":"Gravel","3":"792234","4":"792.234 \\200"},{"1":"2018","2":"Hybrid / City","3":"576805","4":"576.805 \\200"},{"1":"2018","2":"Mountain","3":"4090277","4":"4.090.277 \\200"},{"1":"2018","2":"Road","3":"4630987","4":"4.630.987 \\200"},{"1":"2019","2":"E","3":"2667921","4":"2.667.921 \\200"},{"1":"2019","2":"Gravel","3":"1169038","4":"1.169.038 \\200"},{"1":"2019","2":"Hybrid / City","3":"617064","4":"617.064 \\200"},{"1":"2019","2":"Mountain","3":"4674327","4":"4.674.327 \\200"},{"1":"2019","2":"Road","3":"5889525","4":"5.889.525 \\200"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-<pre class="r"><code># Step 2 - Visualize
+# sales_by_year_cat_1_tbl
+
+# Step 2 - Visualize
 sales_by_year_cat_1_tbl %&gt;% 
   
   # Set up x, y, fill
@@ -549,23 +542,24 @@ sales_by_year_cat_1_tbl %&gt;%
     subtitle = &quot;Each product category has an upward trend&quot;,
     fill = &quot;Main category&quot; # Changes the legend name
   )</code></pre>
-<p><img src="01_tidyverse_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="01_tidyverse_files/figure-html/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
-<div id="challenges" class="section level2" number="1.6">
-<h2 number="1.6"><span class="header-section-number">1.6</span> Challenges</h2>
+<div id="challenges" class="section level1" number="7">
+<h1 number="7"><span class="header-section-number">7</span> Challenges</h1>
 <p>The previous wrangled data is further worked on to separate the location column into city and state and the wrangled data is updated.</p>
-</div>
-<div id="split-location-into-city-and-state" class="section level2" number="1.7">
-<h2 number="1.7"><span class="header-section-number">1.7</span> Split location into city and state</h2>
+<div id="split-location-into-city-and-state" class="section level2" number="7.1">
+<h2 number="7.1"><span class="header-section-number">7.1</span> Split location into city and state</h2>
 <pre class="r"><code>bike_orderlines_wrangled_tbl &lt;- bike_orderlines_wrangled_tbl %&gt;% 
   
   # Separate location into city and state
   separate(col = location,
            into = c(&quot;city&quot;, &quot;state&quot;),
            sep = &quot;, &quot;)</code></pre>
-<div id="sales-by-state" class="section level3" number="1.7.1">
-<h3 number="1.7.1"><span class="header-section-number">1.7.1</span> Sales by State</h3>
+</div>
+<div id="sales-by-state" class="section level2" number="7.2">
+<h2 number="7.2"><span class="header-section-number">7.2</span> Sales by State</h2>
+<p>The steps are the same as the previous ones, year being replaced by state.</p>
 <pre class="r"><code># 6.3 Sales by Location ----
 
 # Step 1 - Manipulate
@@ -584,13 +578,9 @@ sales_by_location_tbl &lt;- bike_orderlines_wrangled_tbl %&gt;%
                                      prefix = &quot;&quot;,
                                      suffix = &quot; €&quot;))
 
-sales_by_location_tbl</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["state"],"name":[1],"type":["chr"],"align":["left"]},{"label":["sales"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["sales_text"],"name":[3],"type":["chr"],"align":["left"]}],"data":[{"1":"Baden-Württemberg","2":"6521090","3":"6.521.090 \\200"},{"1":"Bavaria","2":"6742819","3":"6.742.819 \\200"},{"1":"Berlin","2":"1128433","3":"1.128.433 \\200"},{"1":"Bremen","2":"10653499","3":"10.653.499 \\200"},{"1":"Hamburg","2":"3874756","3":"3.874.756 \\200"},{"1":"Hesse","2":"1558901","3":"1.558.901 \\200"},{"1":"Lower Saxony","2":"4107115","3":"4.107.115 \\200"},{"1":"Mecklenburg-Western Pomerania","2":"618974","3":"618.974 \\200"},{"1":"North Rhine-Westphalia","2":"21200613","3":"21.200.613 \\200"},{"1":"Saxony","2":"2230245","3":"2.230.245 \\200"},{"1":"Saxony-Anhalt","2":"569614","3":"569.614 \\200"},{"1":"Schleswig-Holstein","2":"3224749","3":"3.224.749 \\200"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-<pre class="r"><code># Step 2 - Visualize
+# sales_by_location_tbl
+
+# Step 2 - Visualize
 sales_by_location_tbl %&gt;%
   
   # Setup columns with thje columns state (x-axis) and sales (y-axis)
@@ -609,16 +599,16 @@ sales_by_location_tbl %&gt;%
   
   labs(
     title = &quot;Revenue by state&quot;,
-    subtitle = &quot;Upward Trend&quot;,
     x = &quot;State&quot;,
     y = &quot;Revenue&quot;
   ) +
   
   theme(axis.text.x = element_text(angle = 45, hjust = 1))</code></pre>
-<p><img src="01_tidyverse_files/figure-html/unnamed-chunk-6-1.png" width="672" /> The state of North Rhine-Westphalia shows the highest revenue among the states.</p>
+<p><img src="01_tidyverse_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /> The state of North Rhine-Westphalia shows the highest revenue among the states.</p>
 </div>
-<div id="sales-by-state-and-year" class="section level3" number="1.7.2">
-<h3 number="1.7.2"><span class="header-section-number">1.7.2</span> Sales by State and Year</h3>
+<div id="sales-by-state-and-year" class="section level2" number="7.3">
+<h2 number="7.3"><span class="header-section-number">7.3</span> Sales by State and Year</h2>
+<p>The steps are the same as the previous one, category 1 being replaced state.</p>
 <pre class="r"><code># 6.4 Sales by Year and State ----
 
 # Step 1 - Manipulate
@@ -639,13 +629,9 @@ sales_by_location_year_tbl &lt;- bike_orderlines_wrangled_tbl %&gt;%
                                      prefix = &quot;&quot;,
                                      suffix = &quot; €&quot;))
 
-sales_by_location_year_tbl</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["year"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["state"],"name":[2],"type":["chr"],"align":["left"]},{"label":["sales"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["sales_text"],"name":[4],"type":["chr"],"align":["left"]}],"data":[{"1":"2015","2":"Baden-Württemberg","3":"1031924","4":"1.031.924 \\200"},{"1":"2015","2":"Bavaria","3":"1301461","4":"1.301.461 \\200"},{"1":"2015","2":"Berlin","3":"95853","4":"95.853 \\200"},{"1":"2015","2":"Bremen","3":"1395912","4":"1.395.912 \\200"},{"1":"2015","2":"Hamburg","3":"423090","4":"423.090 \\200"},{"1":"2015","2":"Hesse","3":"308609","4":"308.609 \\200"},{"1":"2015","2":"Lower Saxony","3":"584386","4":"584.386 \\200"},{"1":"2015","2":"Mecklenburg-Western Pomerania","3":"222003","4":"222.003 \\200"},{"1":"2015","2":"North Rhine-Westphalia","3":"3735092","4":"3.735.092 \\200"},{"1":"2015","2":"Saxony","3":"238371","4":"238.371 \\200"},{"1":"2015","2":"Saxony-Anhalt","3":"144737","4":"144.737 \\200"},{"1":"2015","2":"Schleswig-Holstein","3":"448844","4":"448.844 \\200"},{"1":"2016","2":"Baden-Württemberg","3":"1561658","4":"1.561.658 \\200"},{"1":"2016","2":"Bavaria","3":"1129852","4":"1.129.852 \\200"},{"1":"2016","2":"Berlin","3":"72361","4":"72.361 \\200"},{"1":"2016","2":"Bremen","3":"2057760","4":"2.057.760 \\200"},{"1":"2016","2":"Hamburg","3":"636550","4":"636.550 \\200"},{"1":"2016","2":"Hesse","3":"225647","4":"225.647 \\200"},{"1":"2016","2":"Lower Saxony","3":"639839","4":"639.839 \\200"},{"1":"2016","2":"Mecklenburg-Western Pomerania","3":"75443","4":"75.443 \\200"},{"1":"2016","2":"North Rhine-Westphalia","3":"3002792","4":"3.002.792 \\200"},{"1":"2016","2":"Saxony","3":"589994","4":"589.994 \\200"},{"1":"2016","2":"Saxony-Anhalt","3":"65901","4":"65.901 \\200"},{"1":"2016","2":"Schleswig-Holstein","3":"672710","4":"672.710 \\200"},{"1":"2017","2":"Baden-Württemberg","3":"1224152","4":"1.224.152 \\200"},{"1":"2017","2":"Bavaria","3":"1411851","4":"1.411.851 \\200"},{"1":"2017","2":"Berlin","3":"451293","4":"451.293 \\200"},{"1":"2017","2":"Bremen","3":"2557145","4":"2.557.145 \\200"},{"1":"2017","2":"Hamburg","3":"731678","4":"731.678 \\200"},{"1":"2017","2":"Hesse","3":"338783","4":"338.783 \\200"},{"1":"2017","2":"Lower Saxony","3":"1055747","4":"1.055.747 \\200"},{"1":"2017","2":"Mecklenburg-Western Pomerania","3":"201218","4":"201.218 \\200"},{"1":"2017","2":"North Rhine-Westphalia","3":"4671541","4":"4.671.541 \\200"},{"1":"2017","2":"Saxony","3":"595378","4":"595.378 \\200"},{"1":"2017","2":"Saxony-Anhalt","3":"194509","4":"194.509 \\200"},{"1":"2017","2":"Schleswig-Holstein","3":"1076996","4":"1.076.996 \\200"},{"1":"2018","2":"Baden-Württemberg","3":"1114327","4":"1.114.327 \\200"},{"1":"2018","2":"Bavaria","3":"1168783","4":"1.168.783 \\200"},{"1":"2018","2":"Berlin","3":"318974","4":"318.974 \\200"},{"1":"2018","2":"Bremen","3":"1833844","4":"1.833.844 \\200"},{"1":"2018","2":"Hamburg","3":"930803","4":"930.803 \\200"},{"1":"2018","2":"Hesse","3":"330647","4":"330.647 \\200"},{"1":"2018","2":"Lower Saxony","3":"929624","4":"929.624 \\200"},{"1":"2018","2":"Mecklenburg-Western Pomerania","3":"21041","4":"21.041 \\200"},{"1":"2018","2":"North Rhine-Westphalia","3":"4601681","4":"4.601.681 \\200"},{"1":"2018","2":"Saxony","3":"338344","4":"338.344 \\200"},{"1":"2018","2":"Saxony-Anhalt","3":"81163","4":"81.163 \\200"},{"1":"2018","2":"Schleswig-Holstein","3":"572622","4":"572.622 \\200"},{"1":"2019","2":"Baden-Württemberg","3":"1589029","4":"1.589.029 \\200"},{"1":"2019","2":"Bavaria","3":"1730872","4":"1.730.872 \\200"},{"1":"2019","2":"Berlin","3":"189952","4":"189.952 \\200"},{"1":"2019","2":"Bremen","3":"2808838","4":"2.808.838 \\200"},{"1":"2019","2":"Hamburg","3":"1152635","4":"1.152.635 \\200"},{"1":"2019","2":"Hesse","3":"355215","4":"355.215 \\200"},{"1":"2019","2":"Lower Saxony","3":"897519","4":"897.519 \\200"},{"1":"2019","2":"Mecklenburg-Western Pomerania","3":"99269","4":"99.269 \\200"},{"1":"2019","2":"North Rhine-Westphalia","3":"5189507","4":"5.189.507 \\200"},{"1":"2019","2":"Saxony","3":"468158","4":"468.158 \\200"},{"1":"2019","2":"Saxony-Anhalt","3":"83304","4":"83.304 \\200"},{"1":"2019","2":"Schleswig-Holstein","3":"453577","4":"453.577 \\200"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-<pre class="r"><code># Step 2 - Visualize
+# sales_by_location_year_tbl
+
+# Step 2 - Visualize
 sales_by_location_year_tbl %&gt;% 
   
   # Set up x, y and fill
@@ -665,15 +651,15 @@ sales_by_location_year_tbl %&gt;%
                                                     suffix = &quot; €&quot;)) +
   labs(
     title = &quot;Revenue by year and state&quot;,
-    subtitle = &quot;Each state has an upward trend&quot;,
+    subtitle = &quot;Most states show an upward trend&quot;,
     fill = &quot;State&quot;
   ) +
   
   theme(axis.text.x = element_text(angle = 45, hjust = 1))</code></pre>
-<p><img src="01_tidyverse_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="01_tidyverse_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="saving-the-wrangled-data" class="section level3" number="1.7.3">
-<h3 number="1.7.3"><span class="header-section-number">1.7.3</span> Saving the Wrangled Data</h3>
+<div id="saving-the-wrangled-data" class="section level2" number="7.4">
+<h2 number="7.4"><span class="header-section-number">7.4</span> Saving the Wrangled Data</h2>
 <pre class="r"><code># 7.0 Writing Files ----
 
 # 7.1 Excel ----
@@ -688,7 +674,6 @@ bike_orderlines_wrangled_tbl %&gt;%
 # 7.3 RDS ----
 bike_orderlines_wrangled_tbl %&gt;% 
   write_rds(&quot;00_data/01_bike_sales/02_wrangled_data/bike_orderlines.rds&quot;)</code></pre>
-</div>
 </div>
 </div>
 

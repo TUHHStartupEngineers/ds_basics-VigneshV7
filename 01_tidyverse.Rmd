@@ -14,14 +14,14 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(message=FALSE,warning=FALSE, cache=TRUE)
+knitr::opts_chunk$set(fig.align="center", message=FALSE,warning=FALSE, cache=TRUE)
 ```
 
 # Introduction to Tidyverse
 
 Last compiled: `r Sys.Date()`
 
-## Load libraries
+# Load libraries
 
 Load the necessary libraries at the beginning.
 
@@ -33,7 +33,7 @@ library(readxl)
 
 ```
 
-## Load the data
+# Load the data
 Load the bike sales data and store into objects.
 
 ```{r data, include=FALSE}
@@ -43,14 +43,14 @@ bikeshops_tbl <- read_excel(path = "00_data/01_bike_sales/01_raw_data/bikeshops.
 
 ```
 
-## Joining the data
+# Joining the data
 ```{r}
 bike_orderlines_joined_tbl <- orderlines_tbl %>% 
   left_join(bikes_tbl, by = c("product.id" = "bike.id")) %>%
   left_join(bikeshops_tbl, by = c("customer.id" = "bikeshop.id"))
 ```
 
-## Wrangling Data
+# Wrangling Data
 ```{r}
 bike_orderlines_wrangled_tbl <- bike_orderlines_joined_tbl %>% 
   
@@ -85,8 +85,8 @@ bike_orderlines_wrangled_tbl <- bike_orderlines_joined_tbl %>%
 
 ```
 
-## Business Insights
-### Sales by Year
+# Business Insights
+## Sales by Year
 
 ```{r}
 # 6.0 Business Insights ----
@@ -114,7 +114,7 @@ sales_by_year_tbl <- bike_orderlines_wrangled_tbl %>%
                                      prefix = "",
                                      suffix = " €"))
 
-sales_by_year_tbl
+# sales_by_year_tbl
 
 # Step 2 - Visualize
 sales_by_year_tbl %>% 
@@ -144,7 +144,7 @@ sales_by_year_tbl %>%
 
 ```
 
-### Sales by Year and Category 1
+## Sales by Year and Category 1
 ```{r}
 # 6.2 Sales by Year and Category 1 ----
 
@@ -166,7 +166,7 @@ sales_by_year_cat_1_tbl <- bike_orderlines_wrangled_tbl %>%
                                      prefix = "",
                                      suffix = " €"))
 
-sales_by_year_cat_1_tbl
+# sales_by_year_cat_1_tbl
 
 # Step 2 - Visualize
 sales_by_year_cat_1_tbl %>% 
@@ -193,7 +193,7 @@ sales_by_year_cat_1_tbl %>%
   )
 ```
 
-## Challenges
+# Challenges
 The previous wrangled data is further worked on to separate the location column into city and state and the wrangled data is updated.
 
 ## Split location into city and state
@@ -206,7 +206,8 @@ bike_orderlines_wrangled_tbl <- bike_orderlines_wrangled_tbl %>%
            sep = ", ")
 ```
 
-### Sales by State
+## Sales by State
+The steps are the same as the previous ones, year being replaced by state.
 ```{r}
 # 6.3 Sales by Location ----
 
@@ -226,7 +227,7 @@ sales_by_location_tbl <- bike_orderlines_wrangled_tbl %>%
                                      prefix = "",
                                      suffix = " €"))
 
-sales_by_location_tbl
+# sales_by_location_tbl
 
 # Step 2 - Visualize
 sales_by_location_tbl %>%
@@ -247,7 +248,6 @@ sales_by_location_tbl %>%
   
   labs(
     title = "Revenue by state",
-    subtitle = "Upward Trend",
     x = "State",
     y = "Revenue"
   ) +
@@ -256,7 +256,8 @@ sales_by_location_tbl %>%
 ```
 The state of North Rhine-Westphalia shows the highest revenue among the states.
 
-### Sales by State and Year
+## Sales by State and Year
+The steps are the same as the previous one, category 1 being replaced state.
 ```{r}
 # 6.4 Sales by Year and State ----
 
@@ -278,7 +279,7 @@ sales_by_location_year_tbl <- bike_orderlines_wrangled_tbl %>%
                                      prefix = "",
                                      suffix = " €"))
 
-sales_by_location_year_tbl
+# sales_by_location_year_tbl
 
 # Step 2 - Visualize
 sales_by_location_year_tbl %>% 
@@ -300,14 +301,14 @@ sales_by_location_year_tbl %>%
                                                     suffix = " €")) +
   labs(
     title = "Revenue by year and state",
-    subtitle = "Each state has an upward trend",
+    subtitle = "Most states show an upward trend",
     fill = "State"
   ) +
   
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-### Saving the Wrangled Data
+## Saving the Wrangled Data
 ```{r}
 # 7.0 Writing Files ----
 
