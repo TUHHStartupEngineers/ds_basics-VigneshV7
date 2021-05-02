@@ -254,7 +254,7 @@ sales_by_location_tbl %>%
   
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
-The state of North Rhine-Westphalia shows the highest revenue among the states.
+The last line in R code rotates the values on the x axis of the graph to avoid overlapping while printing out the graph.The state of North Rhine-Westphalia shows the highest revenue among the states.
 
 ## Sales by State and Year
 The steps are the same as the previous one, category 1 being replaced state.
