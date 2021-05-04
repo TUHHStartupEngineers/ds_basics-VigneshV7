@@ -44,14 +44,14 @@ bikeshops_tbl <- read_excel(path = "00_data/01_bike_sales/01_raw_data/bikeshops.
 ```
 
 # Joining the data
-```{r}
+```{r join-data}
 bike_orderlines_joined_tbl <- orderlines_tbl %>% 
   left_join(bikes_tbl, by = c("product.id" = "bike.id")) %>%
   left_join(bikeshops_tbl, by = c("customer.id" = "bikeshop.id"))
 ```
 
 # Wrangling Data
-```{r}
+```{r wrangle-data}
 bike_orderlines_wrangled_tbl <- bike_orderlines_joined_tbl %>% 
   
   # 5.1 Separate category name
@@ -88,7 +88,7 @@ bike_orderlines_wrangled_tbl <- bike_orderlines_joined_tbl %>%
 # Business Insights
 ## Sales by Year
 
-```{r}
+```{r sales-by-year}
 # 6.0 Business Insights ----
 # 6.1 Sales by Year ----
 
@@ -145,7 +145,7 @@ sales_by_year_tbl %>%
 ```
 
 ## Sales by Year and Category 1
-```{r}
+```{r sales-by-year-and-cat}
 # 6.2 Sales by Year and Category 1 ----
 
 # Step 1 - Manipulate
@@ -197,7 +197,7 @@ sales_by_year_cat_1_tbl %>%
 The previous wrangled data is further worked on to separate the location column into city and state and the wrangled data is updated.
 
 ## Split location into city and state
-```{r}
+```{r update-wrangled-data}
 bike_orderlines_wrangled_tbl <- bike_orderlines_wrangled_tbl %>% 
   
   # Separate location into city and state
@@ -208,7 +208,7 @@ bike_orderlines_wrangled_tbl <- bike_orderlines_wrangled_tbl %>%
 
 ## Sales by State
 The steps are the same as the previous ones, year being replaced by state.
-```{r}
+```{r sales-by-location}
 # 6.3 Sales by Location ----
 
 # Step 1 - Manipulate
@@ -258,7 +258,7 @@ The last line in R code rotates the values on the x axis of the graph to avoid o
 
 ## Sales by State and Year
 The steps are the same as the previous one, category 1 being replaced state.
-```{r}
+```{r sales-by-location-and-year}
 # 6.4 Sales by Year and State ----
 
 # Step 1 - Manipulate
@@ -309,7 +309,7 @@ sales_by_location_year_tbl %>%
 ```
 
 ## Saving the Wrangled Data
-```{r}
+```{r saving-wrangled-data}
 # 7.0 Writing Files ----
 
 # 7.1 Excel ----

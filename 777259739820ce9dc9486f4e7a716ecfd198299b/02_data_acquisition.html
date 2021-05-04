@@ -9,6 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Vignesh Venkatachalam" />
 
 
 <title>02 Data Acqusition</title>
@@ -375,39 +376,253 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">02 Data Acqusition</h1>
+<h4 class="author">Vignesh Venkatachalam</h4>
 <h4 class="date">2021-04</h4>
 
 </div>
 
 
-<p><strong>IMPORTANT:</strong> You can delete everything in here and start fresh. You might want to start by not deleting anything above this line until you know what that stuff is doing.</p>
-<p>This is an <code>.Rmd</code> file. It is plain text with special features. Any time you write just like this, it will be compiled to normal text in the website. If you put a # in front of your text, it will create a top level-header.</p>
-<div id="my-first-post" class="section level1" number="1">
-<h1 number="1"><span class="header-section-number">1</span> My first post</h1>
-<p>Last compiled: 2021-04-22</p>
-<p>Notice that whatever you define as a top level header, automatically gets put into the table of contents bar on the left.</p>
-<div id="second-level-header" class="section level2" number="1.1">
-<h2 number="1.1"><span class="header-section-number">1.1</span> Second level header</h2>
-<p>You can add more headers by adding more hashtags. These won’t be put into the table of contents</p>
-<div id="third-level-header" class="section level3" number="1.1.1">
-<h3 number="1.1.1"><span class="header-section-number">1.1.1</span> third level header</h3>
-<p>Here’s an even lower level header</p>
+<div id="data-acquisition" class="section level1" number="1">
+<h1 number="1"><span class="header-section-number">1</span> Data Acquisition</h1>
+<p>Last compiled: 2021-05-04</p>
+<div id="challenge-1-getting-data-via-api" class="section level2" number="1.1">
+<h2 number="1.1"><span class="header-section-number">1.1</span> Challenge 1: Getting Data via API</h2>
+<p>I have used the Spotify API to collect information about the Albums of an artist using the artistID as assigned by Spotify. This can be obtained from the Spotify web app on the address bar after you navigate to your favourite artist</p>
+<pre class="r"><code>## 1.0 LIBRARIES 
+
+library(tidyverse) 
+library(rvest)     
+library(xopen)     
+library(jsonlite)  
+library(glue)      
+library(stringi)   
+library(httr)
+library(knitr)</code></pre>
+<div id="client-id-for-authentication" class="section level3" number="1.1.1">
+<h3 number="1.1.1"><span class="header-section-number">1.1.1</span> Client ID for authentication</h3>
+<p>To obtain a client ID and a secret code, go to the spotify developers console through your spotify account and create an app. Just input those values below in place of “xxxxxxxxxx”.</p>
+<pre class="r"><code>clientID &lt;- &quot;xxxxxxxxxx&quot; # Add your own clientID here
+secret   &lt;- &quot;xxxxxxxxxx&quot; # Add your own client secret code here
+
+# Accessing the authentication token
+response &lt;- POST(
+  &#39;https://accounts.spotify.com/api/token&#39;,
+  accept_json(),
+  authenticate(clientID, secret),
+  body = list(grant_type = &#39;client_credentials&#39;),
+  encode = &#39;form&#39;,
+  verbose()
+)</code></pre>
+<pre class="r"><code>mytoken &lt;- content(response)$access_token
+
+HeaderValue &lt;- paste0(&quot;Bearer &quot;, mytoken)</code></pre>
+</div>
+<div id="function-to-gather-album-data" class="section level3" number="1.1.2">
+<h3 number="1.1.2"><span class="header-section-number">1.1.2</span> Function to Gather Album Data</h3>
+<p>Just pass the Artist ID of your favorite artist to collect information about their albums on Spotify.</p>
+<pre class="r"><code>get_album_tracks &lt;- function(artistID = &quot;4vC2GtOXDzAfthZ4gnFowC&quot;) {
+  
+  # API request to get the albums of an Artist
+  URI &lt;- paste0(&#39;https://api.spotify.com/v1/artists/&#39;, artistID, &#39;/albums&#39;)
+  response2 &lt;- GET(url = URI, config = add_headers(Authorization = HeaderValue))
+  
+  # convert to tibble
+  albums &lt;- content(response2)
+  
+  # Extracting only some information about the albums
+  albums_items &lt;- albums$items
+  
+  # Converting into tibble format
+  albums_items_data &lt;- as.data.frame(do.call(cbind, albums_items))
+  albums_items_tbl &lt;- as_tibble(nms = names(albums_items_data), t(albums_items_data)) %&gt;% 
+    # Removing unnecessary columns
+    select(-c(1:8, 11)) %&gt;% 
+    rename(Album = name, 
+           Release_Date = release_date, 
+           Number_of_Tracks = total_tracks, 
+           Type = type, URI = uri)
+}</code></pre>
+</div>
+<div id="example-use-case" class="section level3" number="1.1.3">
+<h3 number="1.1.3"><span class="header-section-number">1.1.3</span> Example Use case</h3>
+<p>For this example, I have used the artist of the late Mandolin Maestro Padmashri Mandolin U Srinivas.</p>
+<pre class="r"><code>albums_items_tbl &lt;- get_album_tracks(artistID = &quot;4vC2GtOXDzAfthZ4gnFowC&quot;)
+
+# Easier to format the look of the table in html file
+kable(albums_items_tbl %&gt;% head(n = 10),
+      align = &quot;ccccc&quot;, 
+      caption = &quot;Album information of the Desired Artist&quot;)</code></pre>
+<table>
+<caption>Album information of the Desired Artist</caption>
+<colgroup>
+<col width="29%" />
+<col width="12%" />
+<col width="16%" />
+<col width="6%" />
+<col width="34%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Album</th>
+<th align="center">Release_Date</th>
+<th align="center">Number_of_Tracks</th>
+<th align="center">Type</th>
+<th align="center">URI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Mandolin U. Srinivas - Vol - 3</td>
+<td align="center">2020-09-30</td>
+<td align="center">8</td>
+<td align="center">album</td>
+<td align="center"><a href="spotify:album:0x1BcdsFd7G1VmtL1GvouF" class="uri">spotify:album:0x1BcdsFd7G1VmtL1GvouF</a></td>
+</tr>
+<tr class="even">
+<td align="center">Mandolin U. Srinivas - Vol - 1</td>
+<td align="center">2020-09-30</td>
+<td align="center">7</td>
+<td align="center">album</td>
+<td align="center"><a href="spotify:album:1ogmwMFiuMfxMq2U8If7ny" class="uri">spotify:album:1ogmwMFiuMfxMq2U8If7ny</a></td>
+</tr>
+<tr class="odd">
+<td align="center">Mandolin U. Srinivas - Vol - 2</td>
+<td align="center">2020-09-30</td>
+<td align="center">8</td>
+<td align="center">album</td>
+<td align="center"><a href="spotify:album:6ezzo1yUNLGMcGapnnUrkv" class="uri">spotify:album:6ezzo1yUNLGMcGapnnUrkv</a></td>
+</tr>
+<tr class="even">
+<td align="center">Annaya</td>
+<td align="center">2020-08-28</td>
+<td align="center">5</td>
+<td align="center">album</td>
+<td align="center"><a href="spotify:album:1GGJH8TduQcvjoT6GTVNKD" class="uri">spotify:album:1GGJH8TduQcvjoT6GTVNKD</a></td>
+</tr>
+<tr class="odd">
+<td align="center">The Unforgettable U Srinivas</td>
+<td align="center">2019-12-13</td>
+<td align="center">5</td>
+<td align="center">album</td>
+<td align="center"><a href="spotify:album:2sprWeSv2EWTeJq8LGrulL" class="uri">spotify:album:2sprWeSv2EWTeJq8LGrulL</a></td>
+</tr>
+<tr class="even">
+<td align="center">Classical Icons - U. Srinivas</td>
+<td align="center">2017-02-27</td>
+<td align="center">3</td>
+<td align="center">album</td>
+<td align="center"><a href="spotify:album:6Je0QnMyx8BfMcbeJ9Agfi" class="uri">spotify:album:6Je0QnMyx8BfMcbeJ9Agfi</a></td>
+</tr>
+<tr class="odd">
+<td align="center">Mandolin</td>
+<td align="center">2014-08-01</td>
+<td align="center">7</td>
+<td align="center">album</td>
+<td align="center"><a href="spotify:album:26r7L0KVXIrAcYekbcRY8d" class="uri">spotify:album:26r7L0KVXIrAcYekbcRY8d</a></td>
+</tr>
+<tr class="even">
+<td align="center">Ilaiyaraaja’s Eka Dhantham</td>
+<td align="center">2010-05-24</td>
+<td align="center">6</td>
+<td align="center">album</td>
+<td align="center"><a href="spotify:album:0IBkCerpoQmBR4zipPeaMM" class="uri">spotify:album:0IBkCerpoQmBR4zipPeaMM</a></td>
+</tr>
+<tr class="odd">
+<td align="center">Parjanya</td>
+<td align="center">2008-11-21</td>
+<td align="center">4</td>
+<td align="center">album</td>
+<td align="center"><a href="spotify:album:7kBEWpnF9rrsmMGx2gibFM" class="uri">spotify:album:7kBEWpnF9rrsmMGx2gibFM</a></td>
+</tr>
+<tr class="even">
+<td align="center">Modern Mandolin Maestro</td>
+<td align="center">2008-07-07</td>
+<td align="center">9</td>
+<td align="center">album</td>
+<td align="center"><a href="spotify:album:3gqqm8NTauaJFCU73v6wQq" class="uri">spotify:album:3gqqm8NTauaJFCU73v6wQq</a></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
+<div id="challenge-2-web-scraping" class="section level2" number="1.2">
+<h2 number="1.2"><span class="header-section-number">1.2</span> Challenge 2: Web Scraping</h2>
+<p>For this challenge, I’ve decided to use the website of Rose bikes. The necessary libraries were loaded at the start of this document in the previous challenge.</p>
+<div id="function-for-scraping-for-bike-data" class="section level3" number="1.2.1">
+<h3 number="1.2.1"><span class="header-section-number">1.2.1</span> Function for Scraping for Bike Data</h3>
+<p>The URL of the specific product category has to passed to this function.</p>
+<pre class="r"><code>scrape_bike_data &lt;- function(url) {
+  
+  html_gravel_bikes &lt;- read_html(url)
+  
+  # Bike model data
+  bike_name &lt;- html_gravel_bikes %&gt;% 
+    html_nodes(css = &quot;.catalog-category-model__title&quot;) %&gt;% 
+    html_text() %&gt;% 
+    str_replace_all(&quot;[\r\n]&quot;, &quot;&quot;) %&gt;% 
+    enframe(name = &quot;Sl No.&quot;, value = &quot;Name&quot;)
+  
+  # Price of the bikes
+  bike_price &lt;- html_gravel_bikes %&gt;% 
+    html_nodes(css = &quot;.catalog-category-model__price-current-value&quot;) %&gt;% 
+    html_text() %&gt;% 
+    str_replace_all(&quot;[\r\n]&quot;, &quot;&quot;) %&gt;% 
+    enframe(name = &quot;Sl No.&quot;, value = &quot;Price&quot;)
+  
+  # Combining into one tibble
+  bike_info_combined &lt;- left_join(bike_name, bike_price) %&gt;% 
+    select(-(&quot;Sl No.&quot;))
+}</code></pre>
 </div>
-<div id="my-second-post-note-the-order" class="section level1" number="2">
-<h1 number="2"><span class="header-section-number">2</span> My second post (note the order)</h1>
-<p>Last compiled: 2021-04-22</p>
-<p>I’m writing this tutorial going from the top down. And, this is how it will be printed. So, notice the second post is second in the list. If you want your most recent post to be at the top, then make a new post starting at the top. If you want the oldest first, do, then keep adding to the bottom</p>
+<div id="example-use-case-for-the-scraping-function" class="section level3" number="1.2.2">
+<h3 number="1.2.2"><span class="header-section-number">1.2.2</span> Example Use case for the Scraping Function</h3>
+<p>Here, I have used the Backroad Al model of the Gravel bikes to demonstrate the working of the function.</p>
+<pre class="r"><code>url_home &lt;- &quot;https://www.rosebikes.de/fahrr%C3%A4der/gravel/backroad-al&quot;
+bike_info_output &lt;- scrape_bike_data(url_home)
+
+kable(bike_info_output, align = &quot;cc&quot;, 
+      caption = &quot;Prices of Backroad Al models of Gravel bikes from Rosebikes&quot;)</code></pre>
+<table>
+<caption>Prices of Backroad Al models of Gravel bikes from Rosebikes</caption>
+<thead>
+<tr class="header">
+<th align="center">Name</th>
+<th align="center">Price</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">BACKROAD AL GRX RX400</td>
+<td align="center">1.699,00 €</td>
+</tr>
+<tr class="even">
+<td align="center">BACKROAD AL Apex 1x11</td>
+<td align="center">1.749,00 €</td>
+</tr>
+<tr class="odd">
+<td align="center">BACKROAD AL GRX RX600 1x11</td>
+<td align="center">1.999,00 €</td>
+</tr>
+<tr class="even">
+<td align="center">BACKROAD AL GRX RX600</td>
+<td align="center">2.049,00 €</td>
+</tr>
+<tr class="odd">
+<td align="center">BACKROAD AL Apex 1x11 Mullet</td>
+<td align="center">2.099,00 €</td>
+</tr>
+<tr class="even">
+<td align="center">BACKROAD AL GRX RX810 1x11</td>
+<td align="center">2.199,00 €</td>
+</tr>
+<tr class="odd">
+<td align="center">BACKROAD AL GRX RX810</td>
+<td align="center">2.249,00 €</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="adding-r-stuff" class="section level1" number="3">
-<h1 number="3"><span class="header-section-number">3</span> Adding R stuff</h1>
-<p>So far this is just a blog where you can write in plain text and serve your writing to a webpage. One of the main purposes of this lab journal is to record your progress learning R. The reason I am asking you to use this process is because you can both make a website, and a lab journal, and learn R all in R-studio. This makes everything really convenient and in the same place.</p>
-<p>So, let’s say you are learning how to make a histogram in R. For example, maybe you want to sample 100 numbers from a normal distribution with mean = 0, and standard deviation = 1, and then you want to plot a histogram. You can do this right here by using an r code block, like this:</p>
-<pre class="r"><code>samples &lt;- rnorm(100, mean=0, sd=1)
-hist(samples)</code></pre>
-<p><img src="02_data_acquisition_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
-<p>When you knit this R Markdown document, you will see that the histogram is printed to the page, along with the R code. This document can be set up to hide the R code in the webpage, just delete the comment (hashtag) from the cold folding option in the yaml header up top. For purposes of letting yourself see the code, and me see the code, best to keep it the way that it is. You’ll learn that all of these things and more can be customized in each R code block.</p>
+</div>
 </div>
 
 
