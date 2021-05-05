@@ -12,7 +12,7 @@ library(httr)
 library(knitr)
 
 clientID <- "xxxxxxxxxx"
-secret <- "xxxxxxxxxx"
+secret   <- "xxxxxxxxxx"
 
 response <- POST(
   'https://accounts.spotify.com/api/token',
@@ -40,7 +40,7 @@ get_album_tracks <- function(artistID = "4vC2GtOXDzAfthZ4gnFowC") {
   
   albums_items_tbl <- as_tibble(nms = names(albums_items_data), t(albums_items_data)) %>% 
     select(-c(1:8, 11)) %>% 
-    rename(Album = name, Release_Date = release_date, Number_of_Tracks = total_tracks, Type = type, URI = uri) 
+    set_names(c("Album Name", "Release Date", "Number of Tracks", "Type", "URI"))
 }
 
 albums_items_tbl <- get_album_tracks(artistID = "4vC2GtOXDzAfthZ4gnFowC")
