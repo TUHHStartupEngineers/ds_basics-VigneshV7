@@ -16,39 +16,146 @@ output:
 knitr::opts_chunk$set(message=FALSE,warning=FALSE, cache=TRUE)
 ```
 
-**IMPORTANT:** You can delete everything in here and start fresh. You might want to start by not deleting anything above this line until you know what that stuff is doing.
+# Data Wrangling
 
-This is an `.Rmd` file. It is plain text with special features. Any time you write just like this, it will be compiled to normal text in the website. If you put a \# in front of your text, it will create a top level-header.
-
-# My first post
-
-Last compiled: `r Sys.Date()`
-
-Notice that whatever you define as a top level header, automatically gets put into the table of contents bar on the left. 
-
-## Second level header
-
-You can add more headers by adding more hashtags. These won't be put into the table of contents
-
-### third level header
-
-Here's an even lower level header
-
-# My second post (note the order)
-
-Last compiled: `r Sys.Date()`
-
-I'm writing this tutorial going from the top down. And, this is how it will be printed. So, notice the second post is second in the list. If you want your most recent post to be at the top, then make a new post starting at the top. If you want the oldest first, do, then keep adding to the bottom
-
-# Adding R stuff
-
-So far this is just a blog where you can write in plain text and serve your writing to a webpage. One of the main purposes of this lab journal is to record your progress learning R. The reason I am asking you to use this process is because you can both make a website, and a lab journal, and learn R all in R-studio. This makes everything really convenient and in the same place. 
-
-So, let's say you are learning how to make a histogram in R. For example, maybe you want to sample 100 numbers from a normal distribution with mean = 0, and standard deviation = 1, and then you want to plot a histogram. You can do this right here by using an r code block, like this:
-
-```{r}
-samples <- rnorm(100, mean=0, sd=1)
-hist(samples)
+### Load Libraries
+```{r load-libraries}
+library(tidyverse)
+library(vroom)
+library(data.table)
+library(lubridate)
+library(knitr)
 ```
 
-When you knit this R Markdown document, you will see that the histogram is printed to the page, along with the R code. This document can be set up to hide the R code in the webpage, just delete the comment (hashtag) from the cold folding option in the yaml header up top. For purposes of letting yourself see the code, and me see the code, best to keep it the way that it is. You'll learn that all of these things and more can be customized in each R code block.
+### Load Data
+
+I have decided to work on the reduced patent data set. The different tables in the dataset are loaded as shown below with the help of the vroom package.
+
+```{r load-data}
+
+# Patent data table
+patent_col_types <- list(
+ id         = col_character(),
+ date       = col_date("%Y-%m-%d"),
+ num_claims = col_double()
+)
+
+patent_dt <- vroom(
+  file      = "00_data/Patent_data_reduced/patent.tsv",
+  delim     = "\t",
+  col_types = patent_col_types,
+  na        = c("", "NA", "NULL")
+)
+
+setDT(patent_dt)
+
+# Patent Assignee data table
+patent_assignee_col_types <- list(
+  patent_id   = col_character(),
+  assignee_id = col_character()
+)
+
+patent_assignee_dt <- vroom(
+  file      = "00_data/Patent_data_reduced/patent_assignee.tsv",
+  delim     = "\t",
+  col_types = patent_assignee_col_types,
+  na        = c("", "NA", "NULL")
+)
+
+setDT(patent_assignee_dt)
+
+# Assignee data table
+assignee_col_types <- list(
+  id           = col_character(),
+  type         = col_character(),
+  organization = col_character()
+)
+
+assignee_dt <- vroom(
+  file      = "00_data/Patent_data_reduced/assignee.tsv",
+  delim     = "\t",
+  col_types = assignee_col_types,
+  na        = c("", "NA", "NULL")
+)
+
+setDT(assignee_dt)
+
+# USPC data table
+uspc_col_types <- list(
+  patent_id = col_character(),
+  mainclass_id = col_character(),
+  sequence = col_double()
+)
+
+uspc_dt <- vroom(
+  file      = "00_data/Patent_data_reduced/uspc.tsv",
+  delim     = "\t",
+  col_types = uspc_col_types,
+  na        = c("", "NA", "NULL")
+)
+
+setDT(uspc_dt)
+
+```
+
+## Question 1: Patent Dominance
+
+I have decided to employ the data.table approach for solving this challenge. The code readability is reduced as compared to the dplyr approach but this turned out to be faster and also resulted in lesser lines of code.
+
+```{r top-10-us}
+# Top 10 US companies using the patent_assignee and the assignee datasets
+us_top_10_companies_dt <- merge(x = patent_assignee_dt, y = assignee_dt, by.x = "assignee_id", by.y = "id")[
+  type == 2,][!is.na(patent_id) || !is.na(organization),][
+    , .(count = .N), by = organization][order(-count), ][1:10,][]
+
+setnames(us_top_10_companies_dt, "organization", "Organization")
+setnames(us_top_10_companies_dt, "count", "Total patents")
+
+# Print table in better format to html
+kable(us_top_10_companies_dt, align = "cc", caption = "Top 10 US companies by number of patents")
+```
+
+## Question 2: Recent Patent Activity
+
+The approach for finding the Top 10 US companies by new patents in August is similar to the previous one
+
+```{r top-10-us-august}
+# Top 10 US companies in August uses patent dataset as well
+us_top_10_new_august_dt <- merge(x = patent_dt, y = patent_assignee_dt, by.x = "id", by.y = "patent_id")[
+  assignee_dt, on = c(assignee_id = "id")
+][type == 2,][
+  !is.na(id) || !is.na(organization),][, month := month(ymd(date))][month == 8, ][
+    , .(count = .N), by = organization
+  ][order(-count), ][1:10,][]
+
+setnames(us_top_10_new_august_dt, "organization", "Organization")
+setnames(us_top_10_new_august_dt, "count", "Total patents")
+
+kable(us_top_10_new_august_dt, align = "cc", caption = "Top 10 US companies by new patents in August")
+
+```
+
+## Question 3: Innovation in Tech
+
+For this challenge, we need to first get a data.table containing the top 10 companies worldwide. Then we merge this with the uspc, patent_assignee and assignee data.tables to the top 5 USPTO tech main classes.
+
+```{r top-5-USPTO}
+# Top 10 companies worldwide
+top_10_worldwide_dt <- merge(x = patent_assignee_dt, y = assignee_dt, by.x = "assignee_id", by.y = "id")[
+  !is.na(patent_id) || !is.na(organization),][, .(count = .N), by = organization][order(-count),][
+    !is.na(organization),][1:10,][]
+
+# Top 5 USPTO tech main classes
+top_5_uspto_dt <- merge(x = uspc_dt, y = patent_assignee_dt, by = "patent_id")[
+  assignee_dt, on = c(assignee_id = "id")][top_10_worldwide_dt, on = "organization"][
+    , .(count = .N), by = mainclass_id][order(-count),][1:5,][]
+
+setnames(top_10_worldwide_dt, "organization", "Organization")
+setnames(top_10_worldwide_dt, "count", "Total patents")
+kable(top_10_worldwide_dt, align = "cc", caption = "Top 10 companies worldwide by number of patents")
+
+setnames(top_5_uspto_dt, "mainclass_id", "Main class ID")
+setnames(top_5_uspto_dt, "count", "Total count")
+kable(top_5_uspto_dt, align = "cc", caption = "Top 5 USPTO tech main classes")
+
+```

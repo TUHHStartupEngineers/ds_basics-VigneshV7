@@ -11,8 +11,8 @@ library(stringi)
 library(httr)
 library(knitr)
 
-clientID <- "b287602f394a4206acf4bf21cf446a8b"
-secret <- "ac95b3422fe84620ae6fe15ee93148d9"
+clientID <- "xxxxxxxxxx"
+secret   <- "xxxxxxxxxx"
 
 response <- POST(
   'https://accounts.spotify.com/api/token',
