@@ -1,5 +1,6 @@
 ---
 title: "02 Data Acqusition"
+author: "Vignesh Venkatachalam"
 date: "2021-04"
 output:
   html_document:
@@ -16,39 +17,132 @@ output:
 knitr::opts_chunk$set(message=FALSE,warning=FALSE, cache=TRUE)
 ```
 
-**IMPORTANT:** You can delete everything in here and start fresh. You might want to start by not deleting anything above this line until you know what that stuff is doing.
-
-This is an `.Rmd` file. It is plain text with special features. Any time you write just like this, it will be compiled to normal text in the website. If you put a \# in front of your text, it will create a top level-header.
-
-# My first post
+# Data Acquisition
 
 Last compiled: `r Sys.Date()`
 
-Notice that whatever you define as a top level header, automatically gets put into the table of contents bar on the left. 
+## Challenge 1: Getting Data via API
 
-## Second level header
+I have used the Spotify API to collect information about the Albums of an artist using the artistID as assigned by Spotify. This can be obtained from the Spotify web app on the address bar after you navigate to your favourite artist
 
-You can add more headers by adding more hashtags. These won't be put into the table of contents
+```{r load-libraries}
+## 1.0 LIBRARIES 
 
-### third level header
+library(tidyverse) 
+library(rvest)     
+library(xopen)     
+library(jsonlite)  
+library(glue)      
+library(stringi)   
+library(httr)
+library(knitr)
 
-Here's an even lower level header
-
-# My second post (note the order)
-
-Last compiled: `r Sys.Date()`
-
-I'm writing this tutorial going from the top down. And, this is how it will be printed. So, notice the second post is second in the list. If you want your most recent post to be at the top, then make a new post starting at the top. If you want the oldest first, do, then keep adding to the bottom
-
-# Adding R stuff
-
-So far this is just a blog where you can write in plain text and serve your writing to a webpage. One of the main purposes of this lab journal is to record your progress learning R. The reason I am asking you to use this process is because you can both make a website, and a lab journal, and learn R all in R-studio. This makes everything really convenient and in the same place. 
-
-So, let's say you are learning how to make a histogram in R. For example, maybe you want to sample 100 numbers from a normal distribution with mean = 0, and standard deviation = 1, and then you want to plot a histogram. You can do this right here by using an r code block, like this:
-
-```{r}
-samples <- rnorm(100, mean=0, sd=1)
-hist(samples)
 ```
 
-When you knit this R Markdown document, you will see that the histogram is printed to the page, along with the R code. This document can be set up to hide the R code in the webpage, just delete the comment (hashtag) from the cold folding option in the yaml header up top. For purposes of letting yourself see the code, and me see the code, best to keep it the way that it is. You'll learn that all of these things and more can be customized in each R code block.
+### Client ID for authentication
+
+To obtain a client ID and a secret code, go to the spotify developers console through your spotify account and create an app. Just input those values below in place of "xxxxxxxxxx".
+
+```{r authentication-id}
+clientID <- "xxxxxxxxxx" # Add your own clientID here
+secret   <- "xxxxxxxxxx" # Add your own client secret code here
+
+# Accessing the authentication token
+response <- POST(
+  'https://accounts.spotify.com/api/token',
+  accept_json(),
+  authenticate(clientID, secret),
+  body = list(grant_type = 'client_credentials'),
+  encode = 'form',
+  verbose()
+)
+
+mytoken <- content(response)$access_token
+
+HeaderValue <- paste0("Bearer ", mytoken)
+
+```
+
+### Function to Gather Album Data
+
+Just pass the Artist ID of your favorite artist to collect information about their albums on Spotify.
+
+```{r album-list}
+get_album_tracks <- function(artistID = "4vC2GtOXDzAfthZ4gnFowC") {
+  
+  # API request to get the albums of an Artist
+  URI <- paste0('https://api.spotify.com/v1/artists/', artistID, '/albums')
+  response2 <- GET(url = URI, config = add_headers(Authorization = HeaderValue))
+  
+  # convert to tibble
+  albums <- content(response2)
+  
+  # Extracting only some information about the albums
+  albums_items <- albums$items
+  
+  # Converting into tibble format
+  albums_items_data <- as.data.frame(do.call(cbind, albums_items))
+  albums_items_tbl <- as_tibble(nms = names(albums_items_data), t(albums_items_data)) %>% 
+    # Removing unnecessary columns
+    select(-c(1:8, 11)) %>% 
+    set_names(c("Album Name", "Release Date", "Number of Tracks", "Type", "URI"))
+}
+```
+
+### Example Use case
+
+For this example, I have used the artist of the late Mandolin Maestro Padmashri Mandolin U Srinivas.
+
+```{r example-u-srinivas}
+albums_items_tbl <- get_album_tracks(artistID = "4vC2GtOXDzAfthZ4gnFowC")
+
+# Easier to format the look of the table in html file
+kable(albums_items_tbl %>% head(n = 10),
+      align = "ccccc", 
+      caption = "Album information of the Desired Artist")
+```
+
+## Challenge 2: Web Scraping
+
+For this challenge, I've decided to use the website of Rose bikes. The necessary libraries were loaded at the start of this document in the previous challenge.
+
+### Function for Scraping for Bike Data
+
+The URL of the specific product category has to passed to this function.
+
+```{r scrape-bike-data}
+scrape_bike_data <- function(url) {
+  
+  html_gravel_bikes <- read_html(url)
+  
+  # Bike model data
+  bike_name <- html_gravel_bikes %>% 
+    html_nodes(css = ".catalog-category-model__title") %>% 
+    html_text() %>% 
+    str_replace_all("[\r\n]", "") %>% 
+    enframe(name = "Sl No.", value = "Name")
+  
+  # Price of the bikes
+  bike_price <- html_gravel_bikes %>% 
+    html_nodes(css = ".catalog-category-model__price-current-value") %>% 
+    html_text() %>% 
+    str_replace_all("[\r\n]", "") %>% 
+    enframe(name = "Sl No.", value = "Price")
+  
+  # Combining into one tibble
+  bike_info_combined <- left_join(bike_name, bike_price) %>% 
+    select(-("Sl No."))
+}
+```
+
+### Example Use case for the Scraping Function
+
+Here, I have used the Backroad Al model of the Gravel bikes to demonstrate the working of the function. 
+
+```{r scraping-example}
+url_home <- "https://www.rosebikes.de/fahrr%C3%A4der/gravel/backroad-al"
+bike_info_output <- scrape_bike_data(url_home)
+
+kable(bike_info_output, align = "cc", 
+      caption = "Prices of Backroad Al models of Gravel bikes from Rosebikes")
+```
