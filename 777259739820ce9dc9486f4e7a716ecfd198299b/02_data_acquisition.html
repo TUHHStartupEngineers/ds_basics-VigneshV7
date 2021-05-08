@@ -377,14 +377,14 @@ div.tocify {
 
 <h1 class="title toc-ignore">02 Data Acqusition</h1>
 <h4 class="author">Vignesh Venkatachalam</h4>
-<h4 class="date">2021-04</h4>
+<h4 class="date">2021-05</h4>
 
 </div>
 
 
 <div id="data-acquisition" class="section level1" number="1">
 <h1 number="1"><span class="header-section-number">1</span> Data Acquisition</h1>
-<p>Last compiled: 2021-05-05</p>
+<p>Last compiled: 2021-05-08</p>
 <div id="challenge-1-getting-data-via-api" class="section level2" number="1.1">
 <h2 number="1.1"><span class="header-section-number">1.1</span> Challenge 1: Getting Data via API</h2>
 <p>I have used the Spotify API to collect information about the Albums of an artist using the artistID as assigned by Spotify. This can be obtained from the Spotify web app on the address bar after you navigate to your favourite artist</p>
@@ -401,8 +401,8 @@ library(knitr)</code></pre>
 <div id="client-id-for-authentication" class="section level3" number="1.1.1">
 <h3 number="1.1.1"><span class="header-section-number">1.1.1</span> Client ID for authentication</h3>
 <p>To obtain a client ID and a secret code, go to the spotify developers console through your spotify account and create an app. Just input those values below in place of “xxxxxxxxxx”.</p>
-<pre class="r"><code>clientID &lt;- &quot;b287602f394a4206acf4bf21cf446a8b&quot; # Add your own clientID here
-secret   &lt;- &quot;ac95b3422fe84620ae6fe15ee93148d9&quot; # Add your own client secret code here
+<pre class="r"><code>clientID &lt;- &quot;xxxxxxxxxx&quot; # Add your own clientID here
+secret   &lt;- &quot;xxxxxxxxxx&quot; # Add your own client secret code here
 
 # Accessing the authentication token
 response &lt;- POST(

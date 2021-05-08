@@ -377,35 +377,34 @@ div.tocify {
 
 <h1 class="title toc-ignore">01 Intro to the tidyverse</h1>
 <h4 class="author">Vignesh Venkatachalam</h4>
-<h4 class="date">2021-04</h4>
+<h4 class="date">2021-05</h4>
 
 </div>
 
 
 <div id="introduction-to-tidyverse" class="section level1" number="1">
 <h1 number="1"><span class="header-section-number">1</span> Introduction to Tidyverse</h1>
-<p>Last compiled: 2021-05-03</p>
-</div>
-<div id="load-libraries" class="section level1" number="2">
-<h1 number="2"><span class="header-section-number">2</span> Load libraries</h1>
+<p>Last compiled: 2021-05-08</p>
+<div id="load-libraries" class="section level3" number="1.0.1">
+<h3 number="1.0.1"><span class="header-section-number">1.0.1</span> Load libraries</h3>
 <p>Load the necessary libraries at the beginning.</p>
 <pre class="r"><code>library(tidyverse)
 
 # Excel Files
 library(readxl)</code></pre>
 </div>
-<div id="load-the-data" class="section level1" number="3">
-<h1 number="3"><span class="header-section-number">3</span> Load the data</h1>
+<div id="load-the-data" class="section level3" number="1.0.2">
+<h3 number="1.0.2"><span class="header-section-number">1.0.2</span> Load the data</h3>
 <p>Load the bike sales data and store into objects.</p>
 </div>
-<div id="joining-the-data" class="section level1" number="4">
-<h1 number="4"><span class="header-section-number">4</span> Joining the data</h1>
+<div id="joining-the-data" class="section level3" number="1.0.3">
+<h3 number="1.0.3"><span class="header-section-number">1.0.3</span> Joining the data</h3>
 <pre class="r"><code>bike_orderlines_joined_tbl &lt;- orderlines_tbl %&gt;% 
   left_join(bikes_tbl, by = c(&quot;product.id&quot; = &quot;bike.id&quot;)) %&gt;%
   left_join(bikeshops_tbl, by = c(&quot;customer.id&quot; = &quot;bikeshop.id&quot;))</code></pre>
 </div>
-<div id="wrangling-data" class="section level1" number="5">
-<h1 number="5"><span class="header-section-number">5</span> Wrangling Data</h1>
+<div id="wrangling-data" class="section level3" number="1.0.4">
+<h3 number="1.0.4"><span class="header-section-number">1.0.4</span> Wrangling Data</h3>
 <pre class="r"><code>bike_orderlines_wrangled_tbl &lt;- bike_orderlines_joined_tbl %&gt;% 
   
   # 5.1 Separate category name
@@ -437,10 +436,10 @@ library(readxl)</code></pre>
   rename(bikeshop = name) %&gt;% 
   set_names(names(.) %&gt;% str_replace_all(&quot;\\.&quot;, &quot;_&quot;))</code></pre>
 </div>
-<div id="business-insights" class="section level1" number="6">
-<h1 number="6"><span class="header-section-number">6</span> Business Insights</h1>
-<div id="sales-by-year" class="section level2" number="6.1">
-<h2 number="6.1"><span class="header-section-number">6.1</span> Sales by Year</h2>
+<div id="business-insights" class="section level2" number="1.1">
+<h2 number="1.1"><span class="header-section-number">1.1</span> Business Insights</h2>
+<div id="sales-by-year" class="section level3" number="1.1.1">
+<h3 number="1.1.1"><span class="header-section-number">1.1.1</span> Sales by Year</h3>
 <pre class="r"><code># 6.0 Business Insights ----
 # 6.1 Sales by Year ----
 
@@ -495,8 +494,8 @@ sales_by_year_tbl %&gt;%
   )</code></pre>
 <p><img src="01_tidyverse_files/figure-html/sales-by-year-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="sales-by-year-and-category-1" class="section level2" number="6.2">
-<h2 number="6.2"><span class="header-section-number">6.2</span> Sales by Year and Category 1</h2>
+<div id="sales-by-year-and-category-1" class="section level3" number="1.1.2">
+<h3 number="1.1.2"><span class="header-section-number">1.1.2</span> Sales by Year and Category 1</h3>
 <pre class="r"><code># 6.2 Sales by Year and Category 1 ----
 
 # Step 1 - Manipulate
@@ -545,11 +544,11 @@ sales_by_year_cat_1_tbl %&gt;%
 <p><img src="01_tidyverse_files/figure-html/sales-by-year-and-cat-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
-<div id="challenges" class="section level1" number="7">
-<h1 number="7"><span class="header-section-number">7</span> Challenges</h1>
+<div id="challenges" class="section level2" number="1.2">
+<h2 number="1.2"><span class="header-section-number">1.2</span> Challenges</h2>
 <p>The previous wrangled data is further worked on to separate the location column into city and state and the wrangled data is updated.</p>
-<div id="split-location-into-city-and-state" class="section level2" number="7.1">
-<h2 number="7.1"><span class="header-section-number">7.1</span> Split location into city and state</h2>
+<div id="split-location-into-city-and-state" class="section level3" number="1.2.1">
+<h3 number="1.2.1"><span class="header-section-number">1.2.1</span> Split location into city and state</h3>
 <pre class="r"><code>bike_orderlines_wrangled_tbl &lt;- bike_orderlines_wrangled_tbl %&gt;% 
   
   # Separate location into city and state
@@ -557,8 +556,8 @@ sales_by_year_cat_1_tbl %&gt;%
            into = c(&quot;city&quot;, &quot;state&quot;),
            sep = &quot;, &quot;)</code></pre>
 </div>
-<div id="sales-by-state" class="section level2" number="7.2">
-<h2 number="7.2"><span class="header-section-number">7.2</span> Sales by State</h2>
+<div id="sales-by-state" class="section level3" number="1.2.2">
+<h3 number="1.2.2"><span class="header-section-number">1.2.2</span> Sales by State</h3>
 <p>The steps are the same as the previous ones, year being replaced by state.</p>
 <pre class="r"><code># 6.3 Sales by Location ----
 
@@ -606,8 +605,8 @@ sales_by_location_tbl %&gt;%
   theme(axis.text.x = element_text(angle = 45, hjust = 1))</code></pre>
 <p><img src="01_tidyverse_files/figure-html/sales-by-location-1.png" width="672" style="display: block; margin: auto;" /> The last line in R code rotates the values on the x axis of the graph to avoid overlapping while printing out the graph.The state of North Rhine-Westphalia shows the highest revenue among the states.</p>
 </div>
-<div id="sales-by-state-and-year" class="section level2" number="7.3">
-<h2 number="7.3"><span class="header-section-number">7.3</span> Sales by State and Year</h2>
+<div id="sales-by-state-and-year" class="section level3" number="1.2.3">
+<h3 number="1.2.3"><span class="header-section-number">1.2.3</span> Sales by State and Year</h3>
 <p>The steps are the same as the previous one, category 1 being replaced state.</p>
 <pre class="r"><code># 6.4 Sales by Year and State ----
 
@@ -658,8 +657,8 @@ sales_by_location_year_tbl %&gt;%
   theme(axis.text.x = element_text(angle = 45, hjust = 1))</code></pre>
 <p><img src="01_tidyverse_files/figure-html/sales-by-location-and-year-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="saving-the-wrangled-data" class="section level2" number="7.4">
-<h2 number="7.4"><span class="header-section-number">7.4</span> Saving the Wrangled Data</h2>
+<div id="saving-the-wrangled-data" class="section level3" number="1.2.4">
+<h3 number="1.2.4"><span class="header-section-number">1.2.4</span> Saving the Wrangled Data</h3>
 <pre class="r"><code># 7.0 Writing Files ----
 
 # 7.1 Excel ----
@@ -674,6 +673,7 @@ bike_orderlines_wrangled_tbl %&gt;%
 # 7.3 RDS ----
 bike_orderlines_wrangled_tbl %&gt;% 
   write_rds(&quot;00_data/01_bike_sales/02_wrangled_data/bike_orderlines.rds&quot;)</code></pre>
+</div>
 </div>
 </div>
 

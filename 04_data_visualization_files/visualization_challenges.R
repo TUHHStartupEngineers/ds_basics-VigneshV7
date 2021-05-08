@@ -1,69 +1,24 @@
----
-title: "04 Data Visualization"
-author: "Vignesh Venkatachalam"
-date: "2021-05"
-output:
-  html_document:
-    toc: true
-    toc_float: true
-    df_print: paged
-    collapsed: false
-    number_sections: true
-    toc_depth: 3
-    code_folding: hide
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(message=FALSE,warning=FALSE, cache=TRUE, align = "center", out.width = "110%")
-```
-
-# Data Visualization
-
-### Load libraries
-
-```{r load-libraries}
 library(tidyverse)
 library(ggthemes)
 library(ggrepel)
 library(lubridate)
 library(maps)
-```
 
-## Challenge 1: Cumulative Cases
-
-### Cumulative Cases Data Wrangling
-
-I have decided not to add data for Europe and only add data by countries.
-
-```{r data-wrangling-cum-cases}
-
+## CHallenge 1
 covid_data_tbl <- read_csv("https://covid.ourworldindata.org/data/owid-covid-data.csv") %>% 
-  
   select(location, date, total_cases) %>% 
-  
-  # Choosing data for 6 countries
   filter(location == "Germany" | location == "United Kingdom" | location == "France" |
          location == "Spain" | location == "United States" | location == "India") %>% 
-  
-  # Format cases data to decimal format
   mutate(cases_format = scales::dollar(total_cases, big.mark = ".",
                                        decimal.mark = ",",
                                        prefix = "",
                                        suffix = ""))
-```
 
-### Plot Cumulative Cases
-
-The time course of cumulative cases is plotted below.
-
-```{r plot-cum-cases}
 covid_data_tbl %>% 
   
   ggplot(aes(x = date, y = total_cases, color = location)) +
   
   geom_line(size = 1) +
-  
-  # Used the ggrepel package to avoid data labels from overlapping
   geom_label_repel(aes(x = date, y = total_cases, label = cases_format, fill = location),
                    vjust = 0.7,
                    hjust = 1.2,
@@ -73,7 +28,6 @@ covid_data_tbl %>%
                    segment.color = "grey50",
                    data  = covid_data_tbl %>% slice(which.max(total_cases))) +
   
-  # Removing unnecessary legend data
   guides(fill = FALSE) +
   
   expand_limits(y = 0) +
@@ -88,7 +42,6 @@ covid_data_tbl %>%
                date_breaks = "1 month",
                expand = c(0, NA)) +
   
-  # Labels
   labs(
     title = "COVID-19 confirmed cases worldwide",
     subtitle = "As of 08/05/2021",
@@ -97,30 +50,20 @@ covid_data_tbl %>%
     color = "Country"
   ) +
   
-  # Themes
   theme_minimal() +
   theme(
     legend.position = "bottom",
     axis.title = element_text(face = "bold"),
-    axis.text.x = element_text(angle = 45, hjust = 1.0)
+    axis.text.x = element_text(angle = 45)
   )
-```
 
-## Challenge 2: Mortality Rate
+## Challenge 2
 
-### Mortality Rate Data Wrangling
-
-```{r data-wrangling-mort-rate}
 covid_data_tbl <- read_csv("https://covid.ourworldindata.org/data/owid-covid-data.csv") %>% 
-  
   mutate(mortality_rate = total_deaths / population) %>% 
-  
-  # Getting the last mortality rate to plot
   group_by(location) %>% 
   summarise(latest_mort_rate = last(mortality_rate)) %>% 
   select(location, latest_mort_rate) %>% 
-  
-  # Taking care of inconsistencies in country names
   mutate(location = case_when(
     
     location == "United Kingdom" ~ "UK",
@@ -129,37 +72,24 @@ covid_data_tbl <- read_csv("https://covid.ourworldindata.org/data/owid-covid-dat
     TRUE ~ location
     
   )) %>%
-  
   distinct()
 
-# Map data from the map package
 world <- map_data("world")
 
 covid_map <- merge(x = world, y = covid_data_tbl, by.x = "region", by.y = "location") %>% 
   select(region, long, lat, latest_mort_rate)
-
-```
-
-### Heat Map of Mortality Rate
-
-The heat map of the mortality rates for the world is plotted below.
-
-```{r heat-map-mort-rate}
 
 covid_map %>% 
   ggplot() +
   
   geom_map(aes(x = long, y = lat, map_id = region, fill = latest_mort_rate), map = world) +
   
-  # Add border lines for the countries
   borders("world", colour = "grey70") +
   
-  # Colour gradient for heat map
   scale_fill_continuous(labels = scales::percent_format(accuracy = 0.001), 
                                                         low = "firebrick1", 
                                                         high = "darkred") +
   
-  # Labels
   labs(
     title = "Confirmed COVID-19 deaths relative to the size of the population",
     subtitle = "Around 3 Million confirmed COVID-19 deaths worldwide",
@@ -167,7 +97,6 @@ covid_map %>%
     fill = "Mortality Rate"
   ) +
   
-  # Themes
   theme_minimal() +
   
   theme(
@@ -178,4 +107,3 @@ covid_map %>%
     title = element_text(color = "black"),
     legend.position = "right"
   )
-```
